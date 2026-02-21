@@ -1,80 +1,103 @@
-# RickAndMortyAPI Android App
+# Rick and Morty Android App
 
-Application Android native développée en Kotlin utilisant Jetpack Compose pour l'interface utilisateur. Elle consomme l'API publique Rick and Morty pour afficher les personnages, lieux et épisodes.
+Une application native Android développée en Kotlin utilisant Jetpack Compose pour naviguer et rechercher dans l'univers de la série "Rick and Morty" via l'[API publique Rick and Morty](https://rickandmortyapi.com/).
 
-## 🛠 Tech Stack
+## ✨ Fonctionnalités Principales
 
-- **Langage**: Kotlin
-- **UI**: Jetpack Compose (Material3)
-- **Architecture**: MVVM (Model-View-ViewModel)
-- **Réseau**: Retrofit 2 + OkHttp
-- **Parsing JSON**: Gson
-- **Chargement d'images**: Coil 3
-- **Asynchronisme**: Kotlin Coroutines & Flow
+L'application est structurée autour d'une interface claire et intuitive :
 
-## 🏗 Architecture
+- **Navigation par Onglets (Tabs)** : Permet de basculer facilement entre les trois catégories principales de l'API :
+  - **Characters** (Personnages)
+  - **Locations** (Lieux)
+  - **Episodes** (Épisodes)
+- **Recherche par Nom** : Une barre de recherche intégrée (SearchView) permet de filtrer dynamiquement les résultats en fonction de l'onglet sélectionné (ex: recherche d'un personnage spécifique ou d'un lieu).
+- **Affichage en Liste Dynamique** : Utilisation de `LazyColumn` pour un défilement fluide des résultats. Des composants UI dédiés (`CharacterListItem`, `LocationListItem`) formatent les données de manière esthétique.
+- **Chargement Asynchrone d'Images** : Affichage des avatars des personnages générés via la librairie Coil 3.
+- **Gestion des États de l'Interface (UI States)** : Gestion propre et réactive des états asynchrones (`LOADING`, `SUCCESS`, `ERROR`) assurant une bonne expérience utilisateur en cas de chargement ou de problème réseau.
 
-Le projet suit l'architecture recommended **MVVM (Model-View-ViewModel)** pour séparer la logique métier de l'interface utilisateur.
+## 🛠 Stack Technique
 
-### Composants Principaux
+- **Langage** : Kotlin
+- **Interface Graphique (UI)** : Jetpack Compose (Material Design 3)
+- **Architecture** : MVVM (Model-View-ViewModel) pour une séparation stricte des préoccupations.
+- **Couche Réseau (Network)** : Retrofit 2 + OkHttp
+- **Parsing JSON** : Gson
+- **Affichage d'Images** : Coil 3 (`coil-compose` et `coil-network-okhttp`)
+- **Asynchronisme & Flux de données** : Kotlin Coroutines & StateFlow
 
-1.  **Model**: Classes de données (`Character`, `Location`, `Episode`) représentant les objets métier.
-2.  **View (UI)**: Composants Jetpack Compose (`AppScaffold`, `ListItm`) qui observent l'état du ViewModel et affichent les données.
-3.  **ViewModel** (`RickAndMortyViewModel`):
-    - Gère l'état de l'interface (`RickAndMortyUIState`).
-    - Exécute les appels réseaux via Retrofit.
-    - Transforme les données brutes (JSON) en objets modèles via Gson.
-4.  **Service (Data Layer)**: Interfaces Retrofit (`CharacterApi`, `LocationApi`, `EpisodeApi`) définissant les endpoints.
+## 🏗 Architecture (Aperçu)
 
-### Diagramme d'Architecture (High Level Graph)
+Le projet suit fidèlement le patron d'architecture **MVVM (Model-View-ViewModel)** recommandé par Google.
+
+### Diagramme d'Architecture
 
 ```mermaid
 graph TD
+    %% UI Layer
     subgraph UI_Layer ["UI Layer (Jetpack Compose)"]
         MainActivity --> AppScaffold
         AppScaffold --> TabButtons
-        AppScaffold --> ListView
-        ListView --> ListItm
+        AppScaffold --> SearchView
+        AppScaffold --> UI_State_Handler
+        UI_State_Handler -- "Displays" --> LazyColumn
+        LazyColumn --> CharacterListItem
+        LazyColumn --> LocationListItem
     end
 
+    %% Presentation Layer
     subgraph Presentation_Layer ["Presentation Layer"]
-        RickAndMortyViewModel -- Expose State (StateFlow) --> UI_Layer
-        UI_Layer -- User Events (Click, Search) --> RickAndMortyViewModel
+        RickAndMortyViewModel
     end
 
-    subgraph Data_Layer ["Data Layer"]
-        RickAndMortyViewModel -- Call API --> RetrofitClient
-        RetrofitClient --> Services
-        subgraph Services
-            CharacterApi
-            LocationApi
-            EpisodeApi
-        end
-        Services -- JSON Response --> RickAndMortyViewModel
+    %% Data Layer
+    subgraph Data_Layer ["Data Layer (Retrofit & Models)"]
+        RetrofitClient
+        CharacterApi
+        LocationApi
+        EpisodeApi
     end
 
-    subgraph Remote ["Remote Source"]
-        Services -- HTTP GET --> RickAndMortyAPI[(Rick and Morty API)]
+    %% Remote Source
+    subgraph Remote ["Remote API"]
+        RickAndMortyAPI[(Rick and Morty API)]
     end
+
+    %% Interactions
+    UI_Layer -- "Send Intents (Search, Change Tab)" --> RickAndMortyViewModel
+    RickAndMortyViewModel -- "Expose StateFlow (UIState, CurrentTab)" --> UI_Layer
+
+    RickAndMortyViewModel -- "Calls API" --> CharacterApi
+    RickAndMortyViewModel -- "Calls API" --> LocationApi
+    RickAndMortyViewModel -- "Calls API" --> EpisodeApi
+
+    CharacterApi --> RetrofitClient
+    LocationApi --> RetrofitClient
+    EpisodeApi --> RetrofitClient
+
+    RetrofitClient -- "HTTP GET" --> RickAndMortyAPI
+    RickAndMortyAPI -- "JSON data" --> RetrofitClient
+    RetrofitClient -- "Parsed Models" --> RickAndMortyViewModel
 ```
 
-## 🚀 Installation
+## 🚀 Installation & Lancement
 
-1.  Cloner le dépôt.
-2.  Ouvrir le projet dans **Android Studio**.
-3.  Synchroniser les fichiers Gradle.
-4.  Lancer l'application sur un émulateur ou un appareil physique.
+1.  **Cloner le dépôt** sur votre machine locale.
+2.  **Ouvrir le projet** avec **Android Studio** (Assurez-vous d'avoir une version récente supportant les plugins `8.x`/`9.x` de l'Android Gradle Plugin).
+3.  **Synchroniser le projet avec les fichiers Gradle** (Sync Project with Gradle Files).
+4.  **Déployer l'application** (`Run 'app'`) sur un émulateur Android ou un appareil physique branché en USB/WiFi (Android 7.0 / API 24 minimum).
 
-## 📂 Structure du Projet
+## 📂 Structure du Répertoire Source
 
-```
+Voici la cartographie des paquets dans `com.example.rickandmortyapi` :
+
+```text
 com.example.rickandmortyapi
-├── MainActivity.kt          # Point d'entrée
-├── models/                  # Data classes (Character, Episode, etc.)
-├── service/                 # Interface Retrofit & Client
-├── ui/
-│   ├── composables/         # Composants UI réutilisables
-│   ├── theme/               # Thème de l'application
-│   └── uiStates/            # États de l'UI (Loading, Success, Error)
-└── viewModel/               # Logique métier (RickAndMortyViewModel)
+├── MainActivity.kt          # Point d'entrée de l'application (setContent)
+├── models/                  # Classes de données Pojo/Data Classes (Character, Location, APIResponse...)
+├── service/                 # Configuration réseau : Client Retrofit, Base URL, Interfaces APIs
+├── ui/                      # Tout ce qui concerne l'aspect visuel de l'app
+│   ├── composables/         # Éléments réutilisables (ListItm, Scaffold, SearchView, TabButtons...)
+│   ├── theme/               # Couleurs, Typographie et Thème général Material3
+│   └── uiStates/            # Sealed classes représentant les états (Ex: RickAndMortyUIState)
+└── viewModel/               # Logique d'application (RickAndMortyViewModel handling searches/API calls)
 ```
