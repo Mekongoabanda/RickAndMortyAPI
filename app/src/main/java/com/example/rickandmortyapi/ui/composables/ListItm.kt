@@ -109,7 +109,6 @@ fun CharacterListItem(character: Character, modifier: Modifier = Modifier) {
                             )
                         }
                     }
-
                     else -> Unit
                 }
             }

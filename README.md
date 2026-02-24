@@ -15,7 +15,13 @@ L'application est structurée autour d'une interface claire et intuitive :
 - **Chargement Asynchrone d'Images** : Affichage des avatars des personnages générés via la librairie Coil 3.
 - **Gestion des États de l'Interface (UI States)** : Gestion propre et réactive des états asynchrones (`LOADING`, `SUCCESS`, `ERROR`) assurant une bonne expérience utilisateur en cas de chargement ou de problème réseau.
 
-## 🛠 Stack Technique
+## � Captures d'écran
+
+|                         Characters Tab                          |                         Location Tab                         |                           Loading State                            |                          Search Query                           |
+| :-------------------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------------: | :-------------------------------------------------------------: |
+| <img src="./charactertab.png" width="200" alt="Characters Tab"> | <img src="./Locationtab.png" width="200" alt="Location Tab"> | <img src="./characterloading.png" width="200" alt="Loading State"> | <img src="./searchingquery.png" width="200" alt="Search Query"> |
+
+## �🛠 Stack Technique
 
 - **Langage** : Kotlin
 - **Interface Graphique (UI)** : Jetpack Compose (Material Design 3)
